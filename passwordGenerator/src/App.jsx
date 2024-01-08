@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -8,6 +8,7 @@ function App() {
   const [numberAllowed, setNumberAllowed] = useState(false);
   const [ charsAllowed, setCharsAllowed] = useState(false);
   const [ password, setPassword ] = useState("");
+  const passwordRef = useRef(null); //useRef hook for copyinh password field
 
   const passwordGenerator = useCallback(() => {
     let pass = "";
@@ -21,6 +22,13 @@ function App() {
     }
     setPassword(pass); // for optimization
   }, [length, charsAllowed, numberAllowed, setPassword]);
+
+
+  const copyPasswordToClipboard = useCallback(() => {
+    passwordRef.current?.select();
+    // passwordRef.current?.setSelectionRange(0,999);  // for future reference when you need to show only a range selected
+    window.navigator.clipboard.writeText(password);
+  }, [password]);
 
   useEffect(() => {
     passwordGenerator();
@@ -37,9 +45,11 @@ function App() {
             className="outline-none w-full py-1 px-3"
             placeholder="Password"
             readOnly
-            // ref={passwordRef}
+            ref={passwordRef}
           />
-          <button className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0">
+          <button className="outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0"
+            onClick={copyPasswordToClipboard}
+          >
             Copy
           </button>
         </div>
